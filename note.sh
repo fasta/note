@@ -23,10 +23,11 @@ function usage()
 usage: $(basename $0) <action>
 
 Actions:
-  new
+  new [TAG]...
   list
   cat <NOTE>
   edit <NOTE>
+  tags
 EoT
 }
 
@@ -38,8 +39,15 @@ shift
 
 case $ACTION in
   "new")
-    NOTE=$REPO/$(date +%Y%m%d%H%M%S)
-    $EDITOR $NOTE
+    NOTE=$(date +%Y%m%d%H%M%S)
+    $EDITOR $REPO/$NOTE
+    if [ "$?" -eq "0" ]; then
+      for ARG in $@
+      do
+        TAGS="--tag $ARG $TAGS"
+      done
+      $BASEDIR/note-tag.sh --repo $REPO --note $NOTE $TAGS
+    fi
     ;;
   "list")
     ls $REPO | sort
@@ -55,6 +63,12 @@ case $ACTION in
     else
       cat $NOTE
     fi
+    ;;
+  "tags")
+    for TAG in $(ls $TAGDIR | sort)
+    do
+      echo $TAG
+    done
     ;;
   *)
     usage >&2
