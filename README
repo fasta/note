@@ -1,0 +1,21 @@
+# Note
+
+Simple note-taking tool with tag support.
+
+## Installation
+
+Simply clone the git repository in a convenient directory on your system:
+
+    $ cd ~/Applications
+    $ git clone http://previous.li/on/note.git
+
+Now create the directory where your notes should be located and edit the config file accordingly:
+
+    $ cd ~/Documents
+    $ mkdir Notes
+    $ echo "REPO=~/Documents/Notes" > ~/Applications/note/config
+
+Add an alias to your bash profile for easier access to the script:
+
+    $ echo "alias 'n'='~/Applications/note/note.sh'" >> ~/.profile
+
