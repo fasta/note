@@ -24,10 +24,10 @@ usage: $(basename $0) <action>
 
 Actions:
   new [TAG]...
-  list
+  ls, list [TAG]
   cat <NOTE>
   edit <NOTE>
-  tags
+  tags [NOTE]
 EoT
 }
 
@@ -49,8 +49,18 @@ case $ACTION in
       $BASEDIR/note-tag.sh --repo $REPO --note $NOTE $TAGS
     fi
     ;;
-  "list")
-    ls $REPO | sort
+  "ls" | "list")
+    TAG=$1
+    if [ -z "$TAG" ]; then
+      ls $REPO | sort
+    else
+      if [ -e "$TAGDIR/$TAG" ]; then
+        cat $TAGDIR/$TAG
+      else
+        echo "error: tag does not exist"
+        exit 1
+      fi
+    fi
     ;;
   "cat" | "edit")
     NOTE=$REPO/$1
@@ -65,10 +75,19 @@ case $ACTION in
     fi
     ;;
   "tags")
-    for TAG in $(ls $TAGDIR | sort)
-    do
-      echo $TAG
-    done
+    NOTE=$1
+    if [ -z "$NOTE" ]; then
+      ls $TAGDIR | sort
+    else
+      if [ ! -e "$REPO/$NOTE" ]; then
+        echo "error: note does not exist"
+        exit 1
+      fi
+      for TAG in $(grep -l $NOTE $TAGDIR/* | sort)
+      do
+        echo $(basename $TAG)
+      done
+    fi
     ;;
   *)
     usage >&2
