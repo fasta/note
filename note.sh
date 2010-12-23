@@ -77,7 +77,10 @@ case $ACTION in
   "tags")
     NOTE=$1
     if [ -z "$NOTE" ]; then
-      ls $TAGDIR | sort
+      for TAG in $(wc -l $TAGDIR/* | sort -r | sed -e 's/ *//' | cut -d\  -f2 | sed -e '1d')
+      do
+        echo $(basename $TAG)
+      done
     else
       if [ ! -e "$REPO/$NOTE" ]; then
         echo "error: note does not exist"
