@@ -23,11 +23,12 @@ function usage()
 usage: $(basename $0) <action>
 
 Actions:
-  new [TAG]...
-  ls, list [TAG]...
-  cat <NOTE>
-  edit <NOTE>
-  tags [NOTE]
+  new [TAG]...         Create a new note and associate it with tags
+  ls, list [TAG]...    List all notes associated with the specified tags
+  cat <NOTE>           Print note to standard output
+  edit <NOTE>          Open note in default editor
+  tags [NOTE]          List all tags sorted by occurrence, or, if a note is
+                       specified, show all tags associated with the note
 EoT
 }
 
