@@ -24,7 +24,7 @@ usage: $(basename $0) <action>
 
 Actions:
   new [TAG]...
-  ls, list [TAG]
+  ls, list [TAG]...
   cat <NOTE>
   edit <NOTE>
   tags [NOTE]
@@ -55,7 +55,22 @@ case $ACTION in
       ls $REPO | sort
     else
       if [ -e "$TAGDIR/$TAG" ]; then
-        cat $TAGDIR/$TAG
+        for NOTE in $(cat $TAGDIR/$TAG)
+        do
+          TAGC=0
+          for TAG in $@
+          do
+            if [ -e "$TAGDIR/$TAG" ]; then
+              TAGC=$(expr $TAGC + $(grep -c $NOTE $TAGDIR/$TAG))
+            else
+              echo "error: tag does not exist"
+              exit 1
+            fi
+          done
+          if [ "$TAGC" -eq "$#" ]; then
+            echo $NOTE
+          fi
+        done
       else
         echo "error: tag does not exist"
         exit 1
