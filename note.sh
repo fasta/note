@@ -5,14 +5,7 @@ BASEDIR=$(pwd)
 cd - > /dev/null
 
 . $BASEDIR/config
-
-if [ ! -d "$REPO" ]; then
-  echo "error: invalid config" >&2
-  exit 1
-fi
-
-TAGDIR=$REPO/.tags
-mkdir -p $TAGDIR
+. $BASEDIR/lib/init.sh
 
 
 # Helpers
@@ -40,15 +33,7 @@ shift
 
 case $ACTION in
   "new")
-    NOTE=$(date +%Y%m%d%H%M%S)
-    $EDITOR $REPO/$NOTE
-    if [ "$?" -eq "0" ]; then
-      for ARG in $@
-      do
-        TAGS="--tag $ARG $TAGS"
-      done
-      $BASEDIR/note-tag.sh --repo $REPO --note $NOTE $TAGS
-    fi
+    $BASEDIR/bin/note-new.sh $@
     ;;
   "ls" | "list")
     TAG=$1
@@ -64,8 +49,7 @@ case $ACTION in
             if [ -e "$TAGDIR/$TAG" ]; then
               TAGC=$(expr $TAGC + $(grep -c $NOTE $TAGDIR/$TAG))
             else
-              echo "error: tag does not exist"
-              exit 1
+              die "tag does not exist"
             fi
           done
           if [ "$TAGC" -eq "$#" ]; then
@@ -73,36 +57,28 @@ case $ACTION in
           fi
         done
       else
-        echo "error: tag does not exist"
-        exit 1
+        die "tag does not exist"
       fi
     fi
     ;;
   "cat" | "edit")
-    NOTE=$REPO/$1
-    if [ ! -e "$NOTE" ]; then
-      echo "error: note does not exist"
-      exit 1
-    fi
+    FILE=$(file_for_id $1)
+    [ -z "$FILE" ] && die "no note with id $1"
     if [ "$ACTION" == "edit" ]; then
-      $EDITOR $NOTE
+      $EDITOR $REPO/$FILE
     else
-      cat $NOTE
+      cat $REPO/$FILE
     fi
     ;;
   "tags")
-    NOTE=$1
-    if [ -z "$NOTE" ]; then
+    FILE=$(file_for_id $1)
+    if [ -z "$FILE" ]; then
       for TAG in $(wc -l $TAGDIR/* | sort -r | sed -e 's/ *//' | cut -d\  -f2 | sed -e '1d')
       do
         echo $(basename $TAG)
       done
     else
-      if [ ! -e "$REPO/$NOTE" ]; then
-        echo "error: note does not exist"
-        exit 1
-      fi
-      for TAG in $(grep -l $NOTE $TAGDIR/* | sort)
+      for TAG in $(grep -l $FILE $TAGDIR/* | sort)
       do
         echo $(basename $TAG)
       done
