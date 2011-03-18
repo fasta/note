@@ -22,6 +22,9 @@ Actions:
   edit <NOTE>          Open note in default editor
   tags [NOTE]          List all tags sorted by occurrence, or, if a note is
                        specified, show all tags associated with the note
+  repo [REPO]          Display the current repository or, if a valid directory
+                       is given change the current repository. (Use '-' to
+                       change back)
 EoT
 }
 
@@ -82,6 +85,24 @@ case $ACTION in
       do
         echo $(basename $TAG)
       done
+    fi
+    ;;
+  "repo")
+    DIR=$1
+    if [ -z "$DIR" ]; then
+      echo $REPO
+    else
+      if [ "$DIR" == "-" ]; then
+        if [ -e "$BASEDIR/config.swp" ]; then
+          mv $BASEDIR/config.swp $BASEDIR/config
+          echo "REPO=$REPO" > $BASEDIR/config.swp
+        fi
+      else
+        [ ! -d "$DIR" ] && die "no valid repository specified"
+
+        mv $BASEDIR/config $BASEDIR/config.swp
+        echo "REPO=$DIR" > $BASEDIR/config
+      fi
     fi
     ;;
   *)
