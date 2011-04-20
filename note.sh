@@ -22,6 +22,7 @@ Actions:
   edit <NOTE>          Open note in default editor
   tags [NOTE]          List all tags sorted by occurrence, or, if a note is
                        specified, show all tags associated with the note
+  tag <NOTE> <TAG>...  Tag existing note with specific tags
   repo [REPO]          Display the current repository or, if a valid directory
                        is given change the current repository. (Use '-' to
                        change back)
@@ -86,6 +87,9 @@ case $ACTION in
         echo $(basename $TAG)
       done
     fi
+    ;;
+  "tag")
+    $BASEDIR/bin/note-tag.sh $@
     ;;
   "repo")
     DIR=$1
