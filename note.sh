@@ -75,14 +75,10 @@ case $ACTION in
     fi
     ;;
   "tags")
-    FILE=$(file_for_id $1)
-    if [ -z "$FILE" ]; then
-      for TAG in $(wc -l $TAGDIR/* | sort -r | sed -e 's/ *//' | cut -d\  -f2 | sed -e '1d')
-      do
-        echo $(basename $TAG)
-      done
+    if [ "$#" -gt "0" ]; then
+      $BASEDIR/bin/note-tag-ls.sh $@
     else
-      for TAG in $(grep -l $FILE $TAGDIR/* | sort)
+      for TAG in $(wc -l $TAGDIR/* | sort -r | sed -e 's/ *//' | cut -d\  -f2 | sed -e '1d')
       do
         echo $(basename $TAG)
       done
